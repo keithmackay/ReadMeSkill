@@ -62,15 +62,13 @@ For each task:
      - Following project conventions
 
 3. **Review Tests**:
-   - Check for test files associated with the implementation
-   - Run `flutter test` to verify current test status
-   - Look for test coverage of the new features
-   - Verify TDD was followed (tests written first)
+   - Check that acceptance checklists in `tests/checklists/` cover the functionality
+   - Verify test fixtures in `tests/fixtures/` are adequate for the task
+   - Check for snapshots in `tests/snapshots/` if applicable
 
 4. **Check for Required Files**:
    - Verify all deliverables mentioned in the documentation exist
-   - Check database migrations if applicable
-   - Verify UI screens/widgets were created as specified
+   - Check that SKILL.md contains the expected sections and logic
 
 ## Step 4: Compare Against Requirements
 
