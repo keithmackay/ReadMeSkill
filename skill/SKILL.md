@@ -1,0 +1,366 @@
+---
+name: readme
+description: Use to generate or improve a project's README.md — analyzes the codebase and produces a tailored, well-structured README with optional companion files
+---
+
+# Generate or Improve README
+
+Analyze the current project and either generate a complete README.md from scratch or improve an existing one. Then offer to create companion documentation files.
+
+## Arguments
+
+If arguments are provided after `/readme`, parse them as key=value pairs:
+
+- `audience`: `developers` | `end-users` | `data-scientists` | `mixed` (default: auto-detect from project type)
+- `type`: `library` | `cli` | `webapp` | `api` | `monorepo` (default: auto-detect)
+- `tone`: `formal` | `casual` | `minimal` | `playful` (default: `professional` for create mode, `match-existing` for improve mode)
+
+If not provided, auto-detect all three from the codebase analysis.
+
+## Step 1: Analyze the Codebase
+
+Scan the project root and gather information from these sources. Read files where they exist — don't guess.
+
+**Package manifests** (pick the one that exists):
+- `package.json` — name, description, scripts, dependencies, license, workspaces
+- `pyproject.toml` / `setup.py` / `setup.cfg` — name, description, dependencies, scripts/entry points
+- `Cargo.toml` — name, description, lib/bin targets, dependencies, categories, keywords
+- `go.mod` — module name, Go version, dependencies
+- `pom.xml` / `build.gradle` — artifact, dependencies, plugins
+- `Gemfile` / `.gemspec` — name, dependencies
+- `composer.json` — name, description, dependencies
+
+**Directory structure**: Run `ls -la` at root and note key directories (src/, lib/, tests/, docs/, examples/, .github/, packages/, apps/).
+
+**CI/CD config**: `.github/workflows/*.yml`, `.gitlab-ci.yml`, `Jenkinsfile`, `.circleci/config.yml`, `.travis.yml`
+
+**Existing documentation**: `README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `CHANGELOG.md`, `SECURITY.md`, `LICENSE`, `docs/`
+
+**Configuration files**: `.env.example`, `.env.sample`, `config/`, `*.config.js`, `*.config.ts`, `docker-compose.yml`, `Dockerfile`
+
+**Entry points**: `src/index.*`, `src/main.*`, `src/lib.*`, `src/cli.*`, `bin/`, `main.go`, `main.py`, `app.*`
+
+Record your findings internally. Do not present this raw analysis to the user.
+
+## Step 2: Detect Project Type
+
+Based on Step 1, classify the project:
+
+| Signal | Type |
+|--------|------|
+| `workspaces` in package.json, or `packages/` + `apps/` dirs, or `turbo.json`/`lerna.json`/`pnpm-workspace.yaml` | **monorepo** |
+| `bin` field in manifest, or `[project.scripts]` in pyproject.toml, or CLI framework deps (commander, click, clap, cobra) | **cli** |
+| Express/Fastify/Flask/Django/Gin/Actix/Spring + route files | **api** |
+| React/Vue/Angular/Svelte/Next.js + component dirs | **webapp** |
+| `[lib]` in Cargo.toml, or `main` field with no bin, or library-pattern exports | **library** |
+| Clearly a framework or toolkit (plugin system, middleware, extensibility) | **framework** |
+| None of the above | **other** |
+
+Also note:
+- **Language**: JavaScript/TypeScript, Python, Rust, Go, Java, Ruby, PHP, etc.
+- **Framework**: Express, React, Click, Actix, etc.
+- **Test framework**: Jest, Vitest, pytest, cargo test, etc.
+- **Build tool**: npm, pip, cargo, turbo, etc.
+
+## Step 3: Determine Mode
+
+- If `README.md` exists at project root and has more than just a title → **Improve Mode** (go to Step 5)
+- If `README.md` does not exist, or exists with only a title / blank content → **Create Mode** (go to Step 4)
+
+## Step 4: Create Mode
+
+Generate a complete README.md from scratch. Follow these sub-steps in order.
+
+### 4a: Ask About Badges
+
+Ask the user one question: "Would you like badges (build status, version, license, etc.) at the top of the README?"
+
+If yes, select 3-6 relevant badges from this list using shields.io format:
+- Build status (only if CI config exists)
+- Test coverage (only if coverage tooling is configured)
+- Package version (only if published to a registry)
+- License (only if license is specified)
+- Downloads (only if published to a registry)
+- Last commit
+
+Use this format: `![Badge Name](https://img.shields.io/badge/...)` or the appropriate shields.io endpoint for the service.
+
+### 4b: Select Sections
+
+Choose which sections to include based on the project:
+
+**Always include:**
+1. Title (H1, project name)
+2. Description (what/why/how, 2-4 sentences)
+3. Highlights (3-6 bullet points of key features or design goals)
+4. Getting Started (prerequisites + installation, copy-paste-ready)
+5. Usage (code examples or CLI invocations)
+6. Development (how to build, test, lint — for contributors)
+7. Contributing (brief guidance or link to CONTRIBUTING.md)
+8. License (name + link to LICENSE file)
+
+**Include conditionally:**
+- **Badges**: Only if user opted in (Step 4a)
+- **Table of Contents**: Only if the README has more than 5 sections
+- **API Reference**: Only for libraries — document main exports, function signatures, options
+- **Configuration**: Only if `.env.example`, config files, or environment variables are detected. Use table format.
+- **Architecture**: Only for monorepos or complex projects — describe package/module structure
+- **Roadmap**: Only if there's evidence (GitHub milestones, TODO comments, roadmap file)
+- **Acknowledgments**: Only if the project clearly builds on other notable work
+
+### 4c: Generate Each Section
+
+Follow these rules for each section:
+
+**Title**
+- Use the project name from the manifest
+- If badges were requested, place them on the line immediately after the H1
+
+**Description**
+- 2-4 sentences covering: what it does, why it exists, how it works (at a high level)
+- Do NOT start with "This project is a..." or repeat the title
+- Do NOT use buzzwords ("blazing fast", "cutting-edge", "seamless", "robust")
+- Lead with what a user gets, not what the technology is
+
+**Highlights**
+- 3-6 bullet points
+- Each bullet is a concrete feature or design goal, not marketing fluff
+- Start each with a bold keyword: **Thread-safe** — ..., **Zero dependencies** — ..., etc.
+
+**Getting Started**
+- Split into Prerequisites and Installation sub-sections
+- Prerequisites: list runtime version, database, external services — only what's actually needed
+- Installation: copy-paste-ready commands from the actual manifest
+  - npm/yarn/pnpm: show `npm install <package>` or `git clone` + `npm install`
+  - pip: show `pip install <package>` or `git clone` + `pip install -e ".[dev]"`
+  - cargo: show `cargo add <package>` or the Cargo.toml dependency line
+  - Go: show `go get` or `go install`
+- Every command in a fenced code block with the correct language hint (`bash`, `sh`, `toml`, etc.)
+
+**Usage**
+- For CLIs: show 2-3 example invocations with realistic arguments and expected output
+- For libraries: show import + basic usage in 5-15 lines of code
+- For APIs: show a curl or fetch example hitting the main endpoints
+- For webapps: show how to start the dev server and what to expect
+- For monorepos: show the main entry point for each key package
+- Code blocks MUST have language hints (```js, ```python, ```rust, etc.)
+
+**Configuration**
+- Table format with columns: Variable | Description | Default | Required
+- Populate from `.env.example` or detected config files
+- Use `> [!NOTE]` GitHub alert for important configuration notes
+
+**API Reference** (libraries only)
+- Document main exports with function/method signatures
+- Include parameter types and return types
+- Use code blocks for signatures
+- Keep it concise — link to full docs if they exist
+
+**Architecture** (monorepos and complex projects)
+- Tree or table showing package/module structure
+- One-line description of each package
+- Use `<details>` collapsible sections for per-package detail if there are more than 3 packages
+
+**Development**
+- List available scripts/commands (build, test, lint, format, etc.)
+- Pull commands directly from the manifest — don't invent them
+- Include a code block developers can copy-paste to get started contributing:
+  ```
+  git clone <repo>
+  cd <project>
+  <install deps>
+  <run tests>
+  ```
+
+**Contributing**
+- 2-3 sentences inviting contributions
+- If CONTRIBUTING.md exists or will be created, link to it
+- Mention the relevant workflow (fork → branch → PR)
+
+**License**
+- State the license name
+- Link to the LICENSE file: `[MIT](LICENSE)` or similar
+- If no license is detected, use `> [!NOTE]` to suggest the user add one
+
+**Table of Contents**
+- Markdown links to each H2 section
+- Place after Description, before Highlights
+
+**Roadmap**
+- Only include if there's actual evidence of planned work
+- Bullet list of planned features or improvements
+- Use checkbox format: `- [ ] Feature name`
+
+### 4d: Assemble and Present
+
+1. Assemble all sections in the order listed above
+2. Ensure a blank line between every section
+3. Run the Quality Checklist (Step 7) internally before presenting
+4. Present the complete README to the user
+5. Ask: "Does this look good? I can adjust any section, or we can move on to companion files."
+6. After the user approves (or after making requested changes), write the file to `README.md`
+
+## Step 5: Improve Mode
+
+When a README already exists with real content, improve it in-place.
+
+### 5a: Map Existing Sections
+
+Parse the existing README's headings and map them to the section menu from Step 4b. Use fuzzy matching:
+- "Installation" / "Setup" / "Quick Start" → Getting Started
+- "API" / "Reference" / "Docs" → API Reference
+- "Tech Stack" / "Built With" → could be part of Description or Architecture
+- "Features" / "Key Features" / "Why X?" → Highlights
+- "Running Tests" / "Testing" → part of Development
+- "How to Contribute" → Contributing
+- Headings that don't map to any standard section: note them as custom sections to preserve
+
+### 5b: Score Each Section
+
+For each section in the menu (Step 4b), assign a score:
+
+- **Strong**: Well-written, accurate, complete. Leave it alone.
+- **Adequate**: Correct but could be richer. Leave it alone (minor polish at most).
+- **Weak**: Present but thin, vague, or missing key information. Enhance it.
+- **Missing**: Not present at all. Generate it.
+
+### 5c: Present Gap Report
+
+Before making any changes, show the user a gap report:
+
+```
+## README Gap Analysis
+
+| Section | Status | Notes |
+|---------|--------|-------|
+| Description | Weak | Only one sentence, doesn't explain why or how |
+| Getting Started | Missing | No installation instructions |
+| Usage | Missing | No code examples |
+| ... | ... | ... |
+
+**Plan**: I'll generate content for Missing sections and strengthen Weak ones.
+Strong and Adequate sections will be preserved as-is.
+```
+
+Wait for user approval before proceeding.
+
+### 5d: Generate Improvements
+
+- For **Missing** sections: generate fresh content following the same rules as Create Mode (Step 4c)
+- For **Weak** sections: keep the existing text as a starting point, then expand and improve it. Do not rewrite from scratch.
+- For **Strong/Adequate** sections: leave them unchanged
+- For **custom sections** (not in the standard menu): preserve them in their original position
+
+### 5e: Voice Preservation
+
+When generating or enhancing content for improve mode:
+- Read the existing README carefully and note: sentence length, vocabulary level, use of humor, formality, use of "we" vs. "you" vs. passive voice
+- Match these patterns in new content
+- If the existing README is casual, be casual. If it's terse, be terse. If it's detailed, be detailed.
+- The reader should not be able to tell which sections are original and which are added
+
+If the `tone` argument was provided, use that instead of matching the existing voice.
+
+### 5f: Assemble and Present
+
+1. Produce the complete improved README (not a diff — the full file)
+2. Run the Quality Checklist (Step 7) internally
+3. Present to the user, noting which sections were added or enhanced
+4. After approval, write to `README.md`
+
+## Step 6: Companion Files
+
+After the README is finalized (create or improve), offer companion files.
+
+### 6a: Scan for Existing Files
+
+Check which of these already exist at the project root (or in `.github/`):
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
+- `LICENSE` (or `LICENSE.md`, `LICENSE.txt`)
+- `CHANGELOG.md`
+- `SECURITY.md`
+- `.github/ISSUE_TEMPLATE/bug_report.yml`
+- `.github/ISSUE_TEMPLATE/feature_request.yml`
+- `.github/pull_request_template.md`
+
+### 6b: Offer Missing Files
+
+Present the user with a list of missing files, ordered by relevance:
+
+1. **CONTRIBUTING.md** — almost always useful if the project accepts contributions
+2. **LICENSE** — critical if not present
+3. **CODE_OF_CONDUCT.md** — important for open-source projects
+4. **CHANGELOG.md** — useful for projects with releases
+5. **.github/ISSUE_TEMPLATE/** — useful for projects accepting issues
+6. **.github/pull_request_template.md** — useful for projects accepting PRs
+7. **SECURITY.md** — only suggest for libraries and APIs, not CLIs or simple tools
+
+Do NOT offer files that already exist. Ask the user which they'd like to generate. Do not generate anything without consent.
+
+### 6c: Generate Requested Files
+
+**CONTRIBUTING.md**:
+- Section on how to report bugs (link to issue template if it exists)
+- Section on how to suggest features
+- Section on development setup — use the ACTUAL commands from the manifest:
+  - Clone, install, run tests, run linter
+  - Reference the correct package manager and test framework
+- Section on PR process (branch naming, commit messages, review process)
+- Section on code style (reference linter config if it exists)
+
+**CODE_OF_CONDUCT.md**:
+- Use Contributor Covenant v2.1 full text
+- Fill in the contact method (ask the user if not obvious from the manifest)
+
+**LICENSE**:
+- Ask which license: MIT, Apache 2.0, GPL 3.0, BSD 2-Clause, BSD 3-Clause
+- Provide the complete license text
+- Fill in year (current year) and copyright holder (from manifest author or ask user)
+
+**CHANGELOG.md**:
+- Use [Keep a Changelog](https://keepachangelog.com/) format
+- Seed with `## [Unreleased]` section
+- Include category headers: Added, Changed, Deprecated, Removed, Fixed, Security
+- If there's a current version in the manifest, add a section for it
+
+**SECURITY.md**:
+- Supported versions table (current major version)
+- Reporting vulnerabilities section with responsible disclosure guidance
+- Response timeline expectations
+- Ask user for security contact email
+
+**Issue Templates** (`.github/ISSUE_TEMPLATE/`):
+- `bug_report.yml`: title, description, reproduction steps, expected behavior, actual behavior, environment
+- `feature_request.yml`: title, problem statement, proposed solution, alternatives considered
+- Both in GitHub YAML form format
+
+**PR Template** (`.github/pull_request_template.md`):
+- Checklist relevant to the project:
+  - Tests added/updated
+  - Documentation updated
+  - Linter passes
+  - Breaking changes noted (if applicable)
+
+Generate each requested file, present it, and write after approval.
+
+## Step 7: Quality Checklist
+
+Run this checklist internally before presenting any generated content. Do not show it to the user — just verify compliance.
+
+- [ ] Title matches project name from manifest
+- [ ] Description does not start with "This project is a..." or repeat the title
+- [ ] No buzzwords: "blazing fast", "cutting-edge", "seamless", "robust", "powerful", "elegant"
+- [ ] No placeholder text: "[describe X]", "TODO", "coming soon", "TBD"
+- [ ] No emoji in section headers
+- [ ] All code blocks have language hints
+- [ ] All commands are pulled from the actual manifest (not invented)
+- [ ] Relative links used for in-repo files
+- [ ] Blank line between every section
+- [ ] Getting Started commands are copy-paste-ready
+- [ ] Configuration table has all 4 columns if present
+- [ ] Only relevant sections included (no API Reference for CLIs, no Architecture for simple projects)
+- [ ] Length is proportional to project complexity
+- [ ] Professional but approachable tone (or matches existing tone in improve mode)
+- [ ] No passive voice in key statements
+- [ ] Content is factually correct based on the codebase analysis
