@@ -323,7 +323,9 @@ Do NOT offer files that already exist. Ask the user which they'd like to generat
 - Section on code style (reference linter config if it exists)
 
 **CODE_OF_CONDUCT.md**:
-- Use Contributor Covenant v2.1 full text
+- Do NOT generate the full Contributor Covenant text inline — it contains language about harassment and discrimination that triggers Anthropic's content filtering policy and will cause a 400 error.
+- Instead, create a short CODE_OF_CONDUCT.md that links to the Contributor Covenant v2.1 externally: `https://www.contributor-covenant.org/version/2/1/code_of_conduct/`
+- Include a brief statement that the project adopts the Contributor Covenant and a link to the full text.
 - Fill in the contact method (ask the user if not obvious from the manifest)
 
 **LICENSE**:
