@@ -1,349 +1,111 @@
 # ReadMeSkill Testing Guidelines
 
-This document defines the testing strategy and requirements for ReadMeSkill development.
+This document defines the testing strategy for ReadMeSkill, a prompt-based Claude Code skill. Since the deliverable is a prompt (SKILL.md) rather than executable code, traditional unit tests don't apply. Instead, we validate output quality through fixture-based testing, checklist evaluation, and snapshot comparison.
 
 ---
 
-## Testing Pyramid
-
-HabitPeeps follows a comprehensive testing strategy with multiple layers:
+## Testing Layers
 
 ```
         /\
-       /  \  E2E (Playwright)
+       /  \  Real-World Validation
       /----\
-     /      \  Widget Tests
+     /      \  Snapshot Comparison
     /--------\
-   /          \  Unit Tests
+   /          \  Checklist Evaluation
   /--------------\
+   Fixture-Based Testing
 ```
 
-### 1. Unit Tests (Foundation)
-**What**: Test individual functions, classes, and business logic in isolation.
-**Tools**: Flutter's `test` package
-**Coverage Target**: 80% line coverage minimum
+### 1. Fixture-Based Testing (Foundation)
 
-**Examples**:
-- Repository CRUD operations
-- Service business logic (SchedulingService, StreakService, etc.)
-- Model serialization/deserialization
-- Utility functions
+**What**: Run the skill against controlled, minimal fake projects with known characteristics.
 
-### 2. Widget Tests (UI Components)
-**What**: Test individual widgets and screens in isolation.
-**Tools**: Flutter's `flutter_test` package
-**Coverage Target**: 75% branch coverage minimum
+**Fixtures** (in `tests/fixtures/`):
+- `node-express-api/` — Node.js Express API with no README
+- `python-cli-tool/` — Python CLI tool with no README
+- `rust-library/` — Rust library crate with no README
+- `existing-readme-with-gaps/` — Project with a weak, incomplete README
+- `monorepo/` — Multi-package workspace with no README
 
-**Examples**:
-- Screen rendering and state management
-- User input handling
-- Navigation flows
-- Error states and loading indicators
+**How**: Invoke `/readme` while in the fixture directory. The controlled inputs let us verify that the skill correctly detects project type, selects appropriate sections, and generates relevant content.
 
-### 3. End-to-End Tests (Full Flows)
-**What**: Test complete user workflows across the entire application.
-**Tools**: **Playwright** (preferred) or manual testing
-**Coverage Target**: All critical user paths
+**Pass criteria**: The skill produces output that reflects the fixture's characteristics (correct language, correct toolchain commands, correct section selection).
 
-**Examples**:
-- Creating a habit → Receiving notification → Completing interaction
-- Onboarding flow → First habit creation → First peep
-- Streak tracking over multiple days
-- Data persistence across app restarts
+### 2. Checklist Evaluation
+
+**What**: Walk through a yes/no checklist after each skill invocation to verify output quality.
+
+**Checklists** (in `tests/checklists/`):
+- `create-mode-checklist.md` — Validates README generation from scratch
+- `improve-mode-checklist.md` — Validates gap analysis and in-place improvement
+- `companion-files-checklist.md` — Validates companion file generation
+
+**How**: After the skill produces output, open the relevant checklist and answer each item honestly. Every item is designed to be objectively verifiable (yes/no, not subjective).
+
+**Pass criteria**: All checklist items pass. Any failure means the SKILL.md prompt needs refinement.
+
+### 3. Snapshot Comparison
+
+**What**: Save known-good outputs as reference points to detect regressions.
+
+**Snapshots** (in `tests/snapshots/`):
+- Named after the fixture and mode: e.g., `node-express-api-create.md`
+- Saved after a successful checklist pass
+
+**How**: After modifying SKILL.md, re-run the skill against at least 2 fixtures and compare output to the saved snapshot. Look for regressions: lost sections, degraded formatting, wrong commands, tonal drift.
+
+**Pass criteria**: Output is at least as good as the snapshot. Differences should be improvements, not regressions. Update the snapshot if output is genuinely better.
+
+### 4. Real-World Validation (Top)
+
+**What**: Run the skill against real GitHub repositories to verify it works outside controlled conditions.
+
+**How**: Pick 2-3 real repos (varying in size, language, and completeness). Run both create and improve modes where applicable. Walk through the relevant checklist.
+
+**Pass criteria**: Output is something you'd actually commit to the repo. Content is accurate, commands are correct, tone is appropriate.
 
 ---
 
-## Test-Driven Development (TDD) - MANDATORY
+## Regression Protocol
 
-**ALL code must follow TDD**:
+After ANY change to `skill/SKILL.md`:
 
-1. ✅ Write failing test FIRST
-2. ✅ Run test → verify FAIL
-3. ✅ Implement minimum code to pass
-4. ✅ Run test → verify PASS
-5. ✅ Refactor if needed
-6. ✅ Run test → verify still PASS
-7. ✅ Commit
-
-**No exceptions**: Every line of production code must be test-driven.
+1. Re-run the skill against at least 2 fixtures
+2. Walk through the relevant checklist(s)
+3. Compare output to saved snapshots
+4. If output regressed, fix the prompt before committing
+5. If output improved, update the snapshot
 
 ---
 
-## End-to-End Testing with Playwright
+## TDD Adaptation for Prompt Engineering
 
-### When to Use Playwright
+Traditional TDD (write failing test → make it pass) adapts to prompt work as:
 
-**Use Playwright instead of manual testing when**:
-- Implementation or test plans recommend "manual testing"
-- Testing multi-screen user workflows
-- Verifying notification behavior
-- Testing platform-specific features (web, macOS, etc.)
-- Regression testing after refactoring
-- Validating UI interactions and navigation
-
-### Playwright Setup
-
-1. **Install Playwright MCP** (if not already installed):
-   ```bash
-   claude mcp add playwright npx @playwright/mcp@latest
-   ```
-
-2. **Run app in debug mode**:
-   ```bash
-   flutter run -d chrome --web-port=8080
-   # or
-   flutter run -d macos
-   ```
-
-3. **Write Playwright tests** to automate user interactions
-
-### Playwright Test Examples
-
-#### Example 1: Creating a Habit
-```typescript
-// Test: User can create a new habit
-await page.goto('http://localhost:8080');
-await page.click('text=My Habits');
-await page.click('[aria-label="Add habit"]');
-await page.fill('input[placeholder="Habit name"]', 'Morning Meditation');
-await page.fill('textarea[placeholder="Description"]', 'Daily meditation practice');
-await page.selectOption('select[name="category"]', 'Mindfulness');
-await page.click('text=Save');
-await expect(page.locator('text=Morning Meditation')).toBeVisible();
-```
-
-#### Example 2: Completing an Interaction
-```typescript
-// Test: User can complete a TAP interaction
-await page.goto('http://localhost:8080');
-await page.click('text="Today\'s Peeps"');
-await page.click('text=Morning Meditation');
-await page.click('button:has-text("Acknowledge")');
-await expect(page.locator('text=👁️ Seen')).toBeVisible();
-```
-
-#### Example 3: Selecting Intention Words
-```typescript
-// Test: User can select 3 intention words
-await page.goto('http://localhost:8080');
-// Navigate to intentionWords interaction
-await page.click('text="Today\'s Peeps"');
-await page.click('[data-interaction-type="intentionWords"]');
-// Select 3 words
-await page.click('text=Focused');
-await page.click('text=Calm');
-await page.click('text=Strong');
-// Commit
-await page.click('button:has-text("Commit")');
-await expect(page.locator('text=👁️ Seen')).toBeVisible();
-```
-
-### Benefits of Playwright Over Manual Testing
-
-✅ **Repeatable**: Run tests consistently across all changes
-✅ **Fast**: Automated tests run in seconds vs. minutes of manual testing
-✅ **Reliable**: No human error in test execution
-✅ **Documentation**: Tests serve as living documentation of user flows
-✅ **Regression Prevention**: Catch breaking changes immediately
-✅ **CI/CD Ready**: Can be integrated into automated pipelines
+1. **Define expected behavior** — Write or update the checklist item that describes what the skill should do
+2. **Run the skill** — Invoke `/readme` on a fixture
+3. **Evaluate** — Walk the checklist. If the item fails, the "test" fails.
+4. **Refine the prompt** — Edit SKILL.md to address the failure
+5. **Re-run** — Verify the checklist item now passes
+6. **Check for regressions** — Verify other checklist items still pass
 
 ---
 
-## Test Organization
+## Test Execution Quick Reference
 
-### Directory Structure
-```
-test/
-├── unit/                    # Unit tests
-│   ├── models/
-│   ├── repositories/
-│   └── services/
-├── widget/                  # Widget tests
-│   ├── screens/
-│   └── widgets/
-└── e2e/                     # Playwright E2E tests
-    ├── onboarding_test.ts
-    ├── habit_management_test.ts
-    └── interactions_test.ts
-```
-
-### Naming Conventions
-
-**Unit tests**: `{component_name}_test.dart`
-- Example: `streak_service_test.dart`
-
-**Widget tests**: `{screen_name}_test.dart`
-- Example: `home_screen_test.dart`
-
-**E2E tests**: `{feature_name}_test.ts`
-- Example: `habit_creation_flow_test.ts`
+| Action | Command |
+|--------|---------|
+| Run skill on a fixture | `cd tests/fixtures/<name> && /readme` |
+| Evaluate output | Open `tests/checklists/<checklist>.md`, answer each item |
+| Save a snapshot | Copy skill output to `tests/snapshots/<fixture>-<mode>.md` |
+| Regression check | Re-run on 2+ fixtures after any SKILL.md change |
 
 ---
 
-## Test Coverage Requirements
+## Anti-Patterns
 
-### Critical Paths (100% Coverage Required)
-- Data persistence (all repository operations)
-- Streak calculations
-- Notification scheduling
-- User data sync (when Azure backend is implemented)
-
-### High Priority (≥90% Coverage)
-- Interaction flows (TAP, QUESTION, INTENTIONWORDS)
-- Scheduling algorithms
-- Business logic services
-
-### Standard Priority (≥80% Coverage)
-- UI screens and widgets
-- Navigation flows
-- Form validation
-
----
-
-## Running Tests
-
-### Unit + Widget Tests
-```bash
-# Run all tests
-flutter test
-
-# Run specific test file
-flutter test test/unit/services/streak_service_test.dart
-
-# Run with coverage
-flutter test --coverage
-```
-
-### E2E Tests (Playwright)
-```bash
-# Start app in test mode
-flutter run -d chrome --web-port=8080
-
-# In another terminal, run Playwright tests
-npx playwright test
-
-# Run specific test
-npx playwright test e2e/habit_creation_flow_test.ts
-
-# Run in headed mode (see browser)
-npx playwright test --headed
-```
-
----
-
-## Test Data Management
-
-### In-Memory Databases
-- All unit and widget tests use in-memory SQLite databases
-- DatabaseService automatically detects test environment
-- Each test gets a clean database via `setUp()` and `tearDown()`
-
-### Test Fixtures
-- Create reusable test data factories
-- Example: `createTestHabit()`, `createTestPeep()`
-- Keep test data minimal but representative
-
-### Mock Repositories
-- Use mock repositories for widget tests
-- Avoid network calls and real database operations in widget tests
-- Example: `MockPeepRepository`, `MockHabitRepository`
-
----
-
-## Test Quality Standards
-
-### Good Test Characteristics
-
-✅ **Fast**: Unit tests run in milliseconds, widget tests in seconds
-✅ **Isolated**: Each test is independent, no shared state
-✅ **Repeatable**: Same result every time
-✅ **Readable**: Clear test names and well-structured arrange-act-assert
-✅ **Maintainable**: Easy to update when requirements change
-
-### Anti-Patterns to Avoid
-
-❌ **Testing implementation details**: Test behavior, not internal structure
-❌ **Brittle tests**: Don't break from minor UI changes
-❌ **Slow tests**: Keep unit tests under 100ms, widget tests under 1s
-❌ **Flaky tests**: No random timeouts or race conditions
-❌ **Testing mocked behavior**: Test real logic, not mock returns
-
----
-
-## Continuous Integration
-
-### Pre-Commit Checklist
-- [ ] All new code has tests
-- [ ] `flutter test` passes locally
-- [ ] Coverage meets minimum thresholds
-- [ ] No skipped or disabled tests
-
-### CI Pipeline (Future)
-1. Run `flutter test` on all commits
-2. Run Playwright E2E tests on main branch
-3. Generate coverage reports
-4. Block merges if tests fail or coverage drops
-
----
-
-## When Implementation Plans Say "Manual Testing"
-
-**Replace with Playwright testing**:
-
-1. Read the manual testing instructions
-2. Translate steps into Playwright test script
-3. Run app in debug mode
-4. Execute Playwright tests to verify functionality
-5. Add Playwright tests to `test/e2e/` directory
-6. Commit both implementation and E2E tests
-
-**Example transformation**:
-
-**Before (Manual Testing)**:
-```
-Task 3.5: Test manually
-1. Create a habit
-2. Wait for notification
-3. Tap notification
-4. Verify TapInteractionScreen opens
-5. Tap "Acknowledge" button
-6. Verify peep marked as acknowledged
-```
-
-**After (Playwright Testing)**:
-```typescript
-test('notification opens TapInteractionScreen and acknowledges peep', async ({ page }) => {
-  // Create habit
-  await page.goto('http://localhost:8080');
-  await page.click('text=My Habits');
-  await page.click('[aria-label="Add"]');
-  await page.fill('input[name="name"]', 'Test Habit');
-  await page.click('text=Save');
-
-  // Simulate notification tap (or wait for scheduled time)
-  await page.click('[data-peep-id="1"]');
-
-  // Verify TapInteractionScreen
-  await expect(page.locator('text=Acknowledge')).toBeVisible();
-
-  // Acknowledge
-  await page.click('button:has-text("Acknowledge")');
-
-  // Verify status
-  await page.goto('http://localhost:8080');
-  await expect(page.locator('text=👁️ Seen')).toBeVisible();
-});
-```
-
----
-
-## Questions?
-
-- **Playwright not working?** Ensure app is running in debug mode on expected port
-- **Tests flaky?** Add explicit waits: `await page.waitForSelector('text=...')`
-- **Coverage dropping?** Run `flutter test --coverage` and check gaps
-- **Stuck on test design?** Follow arrange-act-assert pattern
-
----
-
-**Remember**: Tests are not just verification — they're documentation, design tools, and safety nets. Write them first, write them well, and your code will thank you! ✅
+- **Don't test mocked behavior**: Always run the skill against real (or fixture) project structures, never simulated input
+- **Don't skip the checklist**: "It looks fine" is not a test pass
+- **Don't update snapshots without checking**: Only update a snapshot when the output is genuinely better, not just different
+- **Don't test only one fixture**: Different project types exercise different skill logic
