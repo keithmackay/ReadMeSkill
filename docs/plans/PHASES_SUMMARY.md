@@ -6,11 +6,11 @@ Quick-reference overview of all implementation phases.
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| 0 | Project Scaffolding | 🔲 Not Started |
-| 1 | Core Skill — Create Mode | 🔲 Not Started |
-| 2 | Improve Mode | 🔲 Not Started |
-| 3 | Companion Files | 🔲 Not Started |
-| 4 | Arguments and Final Polish | 🔲 Not Started |
+| 0 | Project Scaffolding | ✅ Complete |
+| 1 | Core Skill — Create Mode | 🔄 Testing |
+| 2 | Improve Mode | 🔄 Testing |
+| 3 | Companion Files | 🔄 Testing |
+| 4 | Arguments and Final Polish | 🔄 In Progress |
 
 ---
 
