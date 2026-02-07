@@ -1,0 +1,20 @@
+{
+  "name": "@formstack/web",
+  "version": "1.0.0",
+  "description": "React components for rendering forms",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.tsx --dts",
+    "test": "vitest",
+    "dev": "storybook dev -p 6006"
+  },
+  "dependencies": {
+    "@formstack/core": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  }
+}

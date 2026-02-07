@@ -1,0 +1,17 @@
+{
+  "name": "formstack",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "dev": "turbo dev"
+  },
+  "devDependencies": {
+    "turbo": "^1.12.0",
+    "typescript": "^5.3.3"
+  }
+}

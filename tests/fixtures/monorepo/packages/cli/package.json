@@ -1,0 +1,14 @@
+{
+  "name": "@formstack/cli",
+  "version": "1.0.0",
+  "description": "CLI for scaffolding forms from schema files",
+  "bin": { "formstack": "dist/cli.js" },
+  "scripts": {
+    "build": "tsup src/cli.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@formstack/core": "workspace:*",
+    "commander": "^11.1.0"
+  }
+}

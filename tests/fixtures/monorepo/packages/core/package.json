@@ -1,0 +1,14 @@
+{
+  "name": "@formstack/core",
+  "version": "1.0.0",
+  "description": "Core form validation and state management",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --dts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  }
+}
