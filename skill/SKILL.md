@@ -14,6 +14,7 @@ If arguments are provided after `/readme`, parse them as key=value pairs:
 - `audience`: `developers` | `end-users` | `data-scientists` | `mixed` (default: auto-detect from project type)
 - `type`: `library` | `cli` | `webapp` | `api` | `monorepo` (default: auto-detect)
 - `tone`: `formal` | `casual` | `minimal` | `playful` (default: `professional` for create mode, `match-existing` for improve mode)
+- `dry-run`: if present (no value needed), show the analysis, section plan, and gap report without generating any content. Useful for previewing what the skill would do.
 
 If not provided, auto-detect all three from the codebase analysis.
 
@@ -108,7 +109,17 @@ Choose which sections to include based on the project:
 - **Roadmap**: Only if there's evidence (GitHub milestones, TODO comments, roadmap file)
 - **Acknowledgments**: Only if the project clearly builds on other notable work
 
-### 4c: Generate Each Section
+### 4c: Dry-Run Check
+
+If `dry-run` was specified, present the analysis summary to the user and stop:
+
+1. Show detected project type, language, framework, build tool, test framework
+2. Show the section list from 4b — which sections will be included and why
+3. Note which conditional sections were included or excluded, with the reason
+4. Do NOT generate any content. Do NOT ask about badges. Do NOT offer companion files.
+5. Stop here.
+
+### 4d: Generate Each Section
 
 Follow these rules for each section:
 
@@ -191,7 +202,7 @@ Follow these rules for each section:
 - Bullet list of planned features or improvements
 - Use checkbox format: `- [ ] Feature name`
 
-### 4d: Assemble and Present
+### 4e: Assemble and Present
 
 1. Assemble all sections in the order listed above
 2. Ensure a blank line between every section
@@ -243,6 +254,8 @@ Strong and Adequate sections will be preserved as-is.
 ```
 
 Wait for user approval before proceeding.
+
+If `dry-run` was specified, stop here after presenting the gap report. Do NOT generate content or offer companion files.
 
 ### 5d: Generate Improvements
 

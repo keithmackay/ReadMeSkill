@@ -41,6 +41,7 @@ Pass arguments after `/readme` to override auto-detection:
 ```
 /readme audience=end-users tone=casual
 /readme type=library tone=formal
+/readme dry-run
 ```
 
 | Argument | Values | Default |
@@ -48,6 +49,9 @@ Pass arguments after `/readme` to override auto-detection:
 | `audience` | `developers`, `end-users`, `data-scientists`, `mixed` | Auto-detect |
 | `type` | `library`, `cli`, `webapp`, `api`, `monorepo` | Auto-detect |
 | `tone` | `formal`, `casual`, `minimal`, `playful` | `professional` (create) / `match-existing` (improve) |
+| `dry-run` | (flag, no value) | Off |
+
+`dry-run` shows the detected project type, planned section list, and gap analysis (for improve mode) without generating any content.
 
 ## Supported Project Types
 
