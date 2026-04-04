@@ -329,7 +329,7 @@ Do NOT offer files that already exist. Ask the user which they'd like to generat
 - Fill in the contact method (ask the user if not obvious from the manifest)
 
 **LICENSE**:
-- Default to MIT unless the user specifies otherwise; if the user has not stated a preference, confirm MIT before generating
+- Ask: "Would you like to use the MIT license (yes, default) or a different license?" — if the user says yes, nothing, or anything non-specific, use MIT
 - Other options if requested: Apache 2.0, GPL 3.0, BSD 2-Clause, BSD 3-Clause
 - Provide the complete license text
 - Fill in year (current year) and copyright holder (from manifest author or ask user)
