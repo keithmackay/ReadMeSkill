@@ -14,17 +14,88 @@ Works in two modes: **create mode** (no README exists) generates a complete file
 
 ## Installation
 
-```bash
-mkdir -p ~/.claude/skills/readme
-cp skill/SKILL.md ~/.claude/skills/readme/SKILL.md
-```
-
-Or, if you cloned this repo elsewhere:
+### Claude Code
 
 ```bash
-mkdir -p ~/.claude/skills/readme
-cp /path/to/ReadMeSkill/skill/SKILL.md ~/.claude/skills/readme/SKILL.md
+cp -r /path/to/ReadMeSkill/skill/ ~/.claude/skills/readme/
 ```
+
+Or symlink:
+```bash
+ln -s /path/to/ReadMeSkill/skill/ ~/.claude/skills/readme
+```
+
+Then invoke with: `/readme`
+
+### Codex
+
+Place the plugin directory where Codex can find it, then add an entry to your marketplace:
+
+**`~/.agents/plugins/marketplace.json`** (create if absent):
+```json
+{
+  "name": "personal",
+  "interface": { "displayName": "Personal Plugins" },
+  "plugins": [
+    {
+      "name": "readme",
+      "source": { "source": "local", "path": "/path/to/ReadMeSkill/skill/" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Productivity"
+    }
+  ]
+}
+```
+
+### Antigravity
+
+**Global install** (all workspaces):
+```bash
+cp -r /path/to/ReadMeSkill/skill/ ~/.gemini/antigravity/skills/readme/
+```
+
+**Workspace install** (current project only):
+```bash
+cp -r /path/to/ReadMeSkill/skill/ .agents/skills/readme/
+```
+
+The root `SKILL.md` has no Claude Code-specific metadata, so it is used as-is — no separate Antigravity variant is needed.
+
+Skills are auto-discovered. You can also mention the skill by name to force activation.
+
+### Gemini CLI
+
+Gemini CLI installs extensions directly from GitHub:
+
+```bash
+gemini extensions install https://github.com/keithmackay/ReadMeSkill
+```
+
+To update:
+```bash
+gemini extensions update readme
+```
+
+The skill is auto-discovered from `GEMINI.md` after installation.
+
+## Compatibility
+
+| Feature | Claude Code | Codex | Antigravity | Gemini CLI |
+|---------|:-----------:|:-----:|:-----------:|:----------:|
+| Core skill | ✅ | ✅ | ✅ | ✅ |
+
+No Claude Code-specific frontmatter (`metadata`, `retrieval`, `tags`), sub-documents, or subagent dispatch is used by this skill, so there are no platform gaps to document — it ports cleanly to all four platforms.
+
+Legend: ✅ Supported · ❌ Not supported
+
+## References
+
+- **Claude Code Skills:** https://code.claude.com/docs/en/skills
+- **Claude Code Complete Guide (PDF):** https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf
+- **Codex Plugins:** https://developers.openai.com/codex/plugins/build
+- **Antigravity Skills:** https://antigravity.google/docs/skills
+- **Gemini CLI Extensions:** https://github.com/google-gemini/gemini-cli/blob/main/docs/extension.md
+- **Agent Skills open standard:** https://agentskills.io/home
 
 ## Usage
 
@@ -76,6 +147,10 @@ Pass arguments after `/readme` to override auto-detection:
 
 ```
 skill/SKILL.md              The skill — all prompt logic lives here
+skill/skills/readme/        Codex/Gemini CLI copy of the skill content
+skill/.codex-plugin/        Codex plugin manifest
+skill/gemini-extension.json Gemini CLI extension manifest
+skill/GEMINI.md             Gemini CLI context file (includes skill content)
 tests/fixtures/             5 minimal fake projects for testing
 tests/checklists/           Acceptance criteria (create, improve, companion files)
 tests/snapshots/            Reference outputs from fixture runs
