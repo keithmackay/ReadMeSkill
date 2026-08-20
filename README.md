@@ -1,4 +1,4 @@
-# ReadMeSkill
+# make-readme
 
 A Claude Code skill that generates or improves README.md files for any GitHub project. Analyzes the codebase — package manifests, directory structure, CI config, existing docs — and produces a well-structured, GitHub-flavored markdown README tailored to the detected project type.
 
@@ -17,15 +17,15 @@ Works in two modes: **create mode** (no README exists) generates a complete file
 ### Claude Code
 
 ```bash
-cp -r /path/to/ReadMeSkill/skill/ ~/.claude/skills/readme/
+cp -r /path/to/make-readme/skill/ ~/.claude/skills/make-readme/
 ```
 
 Or symlink:
 ```bash
-ln -s /path/to/ReadMeSkill/skill/ ~/.claude/skills/readme
+ln -s /path/to/make-readme/skill/ ~/.claude/skills/make-readme
 ```
 
-Then invoke with: `/readme`
+Then invoke with: `/make-readme`
 
 ### Codex
 
@@ -38,8 +38,8 @@ Place the plugin directory where Codex can find it, then add an entry to your ma
   "interface": { "displayName": "Personal Plugins" },
   "plugins": [
     {
-      "name": "readme",
-      "source": { "source": "local", "path": "/path/to/ReadMeSkill/skill/" },
+      "name": "make-readme",
+      "source": { "source": "local", "path": "/path/to/make-readme/skill/" },
       "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     }
@@ -51,12 +51,12 @@ Place the plugin directory where Codex can find it, then add an entry to your ma
 
 **Global install** (all workspaces):
 ```bash
-cp -r /path/to/ReadMeSkill/skill/ ~/.gemini/antigravity/skills/readme/
+cp -r /path/to/make-readme/skill/ ~/.gemini/antigravity/skills/make-readme/
 ```
 
 **Workspace install** (current project only):
 ```bash
-cp -r /path/to/ReadMeSkill/skill/ .agents/skills/readme/
+cp -r /path/to/make-readme/skill/ .agents/skills/make-readme/
 ```
 
 The root `SKILL.md` has no Claude Code-specific metadata, so it is used as-is — no separate Antigravity variant is needed.
@@ -68,12 +68,12 @@ Skills are auto-discovered. You can also mention the skill by name to force acti
 Gemini CLI installs extensions directly from GitHub:
 
 ```bash
-gemini extensions install https://github.com/keithmackay/ReadMeSkill
+gemini extensions install https://github.com/keithmackay/make-readme
 ```
 
 To update:
 ```bash
-gemini extensions update readme
+gemini extensions update make-readme
 ```
 
 The skill is auto-discovered from `GEMINI.md` after installation.
@@ -102,7 +102,7 @@ Legend: ✅ Supported · ❌ Not supported
 In any project directory, open a Claude Code session and run:
 
 ```
-/readme
+/make-readme
 ```
 
 The skill will:
@@ -115,12 +115,12 @@ The skill will:
 
 ### Optional Arguments
 
-Pass arguments after `/readme` to override auto-detection:
+Pass arguments after `/make-readme` to override auto-detection:
 
 ```
-/readme audience=end-users tone=casual
-/readme type=library tone=formal
-/readme dry-run
+/make-readme audience=end-users tone=casual
+/make-readme type=library tone=formal
+/make-readme dry-run
 ```
 
 | Argument | Values | Default |
@@ -147,7 +147,7 @@ Pass arguments after `/readme` to override auto-detection:
 
 ```
 skill/SKILL.md              The skill — all prompt logic lives here
-skill/skills/readme/        Codex/Gemini CLI copy of the skill content
+skill/skills/make-readme/        Codex/Gemini CLI copy of the skill content
 skill/.codex-plugin/        Codex plugin manifest
 skill/gemini-extension.json Gemini CLI extension manifest
 skill/GEMINI.md             Gemini CLI context file (includes skill content)
@@ -167,7 +167,7 @@ There's no build step or automated test suite — the deliverable is a single pr
 ```bash
 cd tests/fixtures/node-express-api
 # In a Claude Code session:
-/readme
+/make-readme
 ```
 
 **Validate output against checklists:**

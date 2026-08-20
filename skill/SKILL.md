@@ -1,5 +1,5 @@
 ---
-name: readme
+name: make-readme
 description: Use to generate or improve a project's README.md — analyzes the codebase and produces a tailored, well-structured README with optional companion files
 ---
 
@@ -9,7 +9,7 @@ Analyze the current project and either generate a complete README.md from scratc
 
 ## Arguments
 
-If arguments are provided after `/readme`, parse them as key=value pairs:
+If arguments are provided after `/make-readme`, parse them as key=value pairs:
 
 - `audience`: `developers` | `end-users` | `data-scientists` | `mixed` (default: auto-detect from project type)
 - `type`: `library` | `cli` | `webapp` | `api` | `monorepo` (default: auto-detect)

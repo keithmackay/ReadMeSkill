@@ -1,1 +1,1 @@
-@./skills/readme/SKILL.md
+@./skills/make-readme/SKILL.md

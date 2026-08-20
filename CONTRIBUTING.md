@@ -1,4 +1,4 @@
-# Contributing to ReadMeSkill
+# Contributing to make-readme
 
 Thanks for your interest in contributing. This guide covers the development workflow and how to submit changes.
 
@@ -20,9 +20,9 @@ Clone the repo and install the skill:
 
 ```bash
 git clone <repo-url>
-cd ReadMeSkill
-mkdir -p ~/.claude/skills/readme
-cp skill/SKILL.md ~/.claude/skills/readme/SKILL.md
+cd make-readme
+mkdir -p ~/.claude/skills/make-readme
+cp skill/SKILL.md ~/.claude/skills/make-readme/SKILL.md
 ```
 
 There's no build step or runtime dependencies. The entire skill is a single prompt file at `skill/SKILL.md`.
@@ -34,7 +34,7 @@ After editing `skill/SKILL.md`, test against the fixtures:
 ```bash
 cd tests/fixtures/node-express-api
 # In a Claude Code session:
-/readme
+/make-readme
 ```
 
 Validate the output against the checklists in `tests/checklists/`:

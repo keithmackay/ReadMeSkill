@@ -1,6 +1,6 @@
-# ReadMeSkill Testing Guidelines
+# make-readme Testing Guidelines
 
-This document defines the testing strategy for ReadMeSkill, a prompt-based Claude Code skill. Since the deliverable is a prompt (SKILL.md) rather than executable code, traditional unit tests don't apply. Instead, we validate output quality through fixture-based testing, checklist evaluation, and snapshot comparison.
+This document defines the testing strategy for make-readme, a prompt-based Claude Code skill. Since the deliverable is a prompt (SKILL.md) rather than executable code, traditional unit tests don't apply. Instead, we validate output quality through fixture-based testing, checklist evaluation, and snapshot comparison.
 
 ---
 
@@ -28,7 +28,7 @@ This document defines the testing strategy for ReadMeSkill, a prompt-based Claud
 - `existing-readme-with-gaps/` — Project with a weak, incomplete README
 - `monorepo/` — Multi-package workspace with no README
 
-**How**: Invoke `/readme` while in the fixture directory. The controlled inputs let us verify that the skill correctly detects project type, selects appropriate sections, and generates relevant content.
+**How**: Invoke `/make-readme` while in the fixture directory. The controlled inputs let us verify that the skill correctly detects project type, selects appropriate sections, and generates relevant content.
 
 **Pass criteria**: The skill produces output that reflects the fixture's characteristics (correct language, correct toolchain commands, correct section selection).
 
@@ -84,7 +84,7 @@ After ANY change to `skill/SKILL.md`:
 Traditional TDD (write failing test → make it pass) adapts to prompt work as:
 
 1. **Define expected behavior** — Write or update the checklist item that describes what the skill should do
-2. **Run the skill** — Invoke `/readme` on a fixture
+2. **Run the skill** — Invoke `/make-readme` on a fixture
 3. **Evaluate** — Walk the checklist. If the item fails, the "test" fails.
 4. **Refine the prompt** — Edit SKILL.md to address the failure
 5. **Re-run** — Verify the checklist item now passes
@@ -96,7 +96,7 @@ Traditional TDD (write failing test → make it pass) adapts to prompt work as:
 
 | Action | Command |
 |--------|---------|
-| Run skill on a fixture | `cd tests/fixtures/<name> && /readme` |
+| Run skill on a fixture | `cd tests/fixtures/<name> && /make-readme` |
 | Evaluate output | Open `tests/checklists/<checklist>.md`, answer each item |
 | Save a snapshot | Copy skill output to `tests/snapshots/<fixture>-<mode>.md` |
 | Regression check | Re-run on 2+ fixtures after any SKILL.md change |

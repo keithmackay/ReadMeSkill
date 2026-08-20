@@ -1,4 +1,4 @@
-You are reviewing code development for specific tasks in the ReadMeSkill project.
+You are reviewing code development for specific tasks in the make-readme project.
 
 **CRITICAL: You MUST perform a complete, thorough review of all selected tasks, even if:**
 - Progress documents indicate the task is "complete" or "reviewed"
