@@ -2,7 +2,7 @@
 
 A Claude Code skill that generates or improves README.md files for any GitHub project. Analyzes the codebase — package manifests, directory structure, CI config, existing docs — and produces a well-structured, GitHub-flavored markdown README tailored to the detected project type.
 
-Works in two modes: **create mode** (no README exists) generates a complete file from scratch; **improve mode** (README exists) performs a gap analysis and enhances the existing file in-place, preserving the author's voice. After the README is done, offers to create companion files like CONTRIBUTING.md, CODE_OF_CONDUCT.md, LICENSE, and issue/PR templates.
+Works in two modes: **create mode** (no README exists) generates a complete file from scratch; **improve mode** (README exists) performs a gap analysis and enhances the existing file in-place, preserving the author's voice. After the README is done, offers to create companion files like CONTRIBUTING.md, CODE_OF_CONDUCT.md, LICENSE, issue/PR templates, and — for projects that are themselves an agent skill or plugin — a `--help`/`:help` mechanism backed by `help.md`.
 
 ## Highlights
 
@@ -10,6 +10,7 @@ Works in two modes: **create mode** (no README exists) generates a complete file
 - **Project-aware** — Detects project type (library, CLI, webapp, API, monorepo) and tailors sections accordingly
 - **Voice preservation** — Improve mode matches the tone and style of existing content
 - **Companion files** — Offers to generate CONTRIBUTING.md, CODE_OF_CONDUCT.md, LICENSE, CHANGELOG.md, issue/PR templates
+- **Help mechanism for skills/plugins** — For projects with a `SKILL.md` or plugin manifest, offers to add a `--help`/`:help` convention (`help.md` + a short pointer section in the manifest), extracting from any existing inline help text rather than duplicating it
 - **No dependencies** — Pure prompt; install by copying a single file
 
 ## Installation
@@ -111,7 +112,7 @@ The skill will:
 2. Detect the project type (library, CLI, webapp, API, monorepo)
 3. Ask whether you want badges
 4. Generate a complete README (create mode) or improve the existing one (improve mode)
-5. Offer to create companion files (CONTRIBUTING.md, CODE_OF_CONDUCT.md, LICENSE, etc.)
+5. Offer to create companion files (CONTRIBUTING.md, CODE_OF_CONDUCT.md, LICENSE, a `--help`/`:help` mechanism for skills/plugins, etc.)
 
 ### Optional Arguments
 
