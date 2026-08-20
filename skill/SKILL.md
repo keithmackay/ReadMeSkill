@@ -15,6 +15,7 @@ If arguments are provided after `/make-readme`, parse them as key=value pairs:
 - `type`: `library` | `cli` | `webapp` | `api` | `monorepo` (default: auto-detect)
 - `tone`: `formal` | `casual` | `minimal` | `playful` (default: `professional` for create mode, `match-existing` for improve mode)
 - `dry-run`: if present (no value needed), show the analysis, section plan, and gap report without generating any content. Useful for previewing what the skill would do.
+- `--help`: if present, do not run any of the steps below. Instead, read and display the contents of `help.md` (in this skill's folder) verbatim, then stop.
 
 If not provided, auto-detect all three from the codebase analysis.
 
