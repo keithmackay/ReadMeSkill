@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- README `## Changelog` section linking to `CHANGELOG.md`
+- Help-mechanism (`--help`/`:help` + `help.md`) generation as a companion file, with a README pointer to it added automatically
 - `/readme` skill with create and improve modes
 - Project type detection (Node.js, Python, Rust, Go, Java, Ruby, PHP, monorepos)
 - Companion file generation (CONTRIBUTING, CODE_OF_CONDUCT, LICENSE, CHANGELOG, SECURITY, issue/PR templates)
