@@ -189,6 +189,10 @@ Reference outputs for each fixture are saved in `tests/snapshots/`. After changi
 
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 ## License
 
 [MIT](LICENSE)
