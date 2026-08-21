@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- Add --version flag support, reporting installed version and a best-effort GitHub update check
 - README `## Changelog` section linking to `CHANGELOG.md`
 - Help-mechanism (`--help`/`:help` + `help.md`) generation as a companion file, with a README pointer to it added automatically
 - `/readme` skill with create and improve modes
