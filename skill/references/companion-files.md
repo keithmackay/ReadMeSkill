@@ -68,6 +68,7 @@ Do NOT offer files that already exist, and do NOT offer the help mechanism for n
 - Seed with `## [Unreleased]` section
 - Include category headers: Added, Changed, Deprecated, Removed, Fixed, Security
 - If there's a current version in the manifest, add a section for it
+- Add a `## Changelog` section to `README.md` (placed just before `## License`, or at the end if there's no License section) with a one-line pointer: `See [CHANGELOG.md](CHANGELOG.md) for release history.` — so the file is discoverable from the README rather than only found by browsing the repo
 
 **SECURITY.md**:
 - Supported versions table (current major version)
