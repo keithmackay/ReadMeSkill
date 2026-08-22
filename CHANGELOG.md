@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+- Document mackayi marketplace installation in README
+
 ### Added
 
 - Add --version flag support, reporting installed version and a best-effort GitHub update check

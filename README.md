@@ -15,6 +15,13 @@ Works in two modes: **create mode** (no README exists) generates a complete file
 
 ## Installation
 
+### From the mackayi marketplace (recommended)
+
+```
+/plugin marketplace add keithmackay/mackayi
+/plugin install make-readme@mackayi
+```
+
 ### Claude Code
 
 ```bash
